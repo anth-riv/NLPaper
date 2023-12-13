@@ -1,3 +1,4 @@
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -10,9 +11,9 @@ export default function Home() {
           A modern FullStack application for interacting with your documents using natural language.
         </p>
         <div className="flex justify-center">
-          <button className="py-2 px-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded hover:shadow-md transition duration-300">
+          <Link href="/AppPage" className="py-2 px-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded hover:shadow-md transition duration-300">
             Start Now
-          </button>
+          </Link>
         </div>
       </div>
     </div>
