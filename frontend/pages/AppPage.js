@@ -11,7 +11,7 @@ const AppPage = () => {
     if (!text) return;
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/summarize', { text });
+      const response = await axios.post('http://localhost:8000/summarize', { text });
       setSummary(response.data.summary);
     } catch (error) {
       setSummary('Network error. Please try again.');
@@ -19,12 +19,26 @@ const AppPage = () => {
     setIsLoading(false);
   };
 
+  const handleSubmitFile = async (file) => {
+    console.log('Uploading file:', file);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true
+      });
+      setText(response.data.text);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
+
   const onDrop = useCallback((acceptedFiles) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setText(event.target.result);
-    };
-    acceptedFiles.forEach(file => reader.readAsText(file));
+    handleSubmitFile(acceptedFiles[0]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -43,6 +57,9 @@ const AppPage = () => {
           value={text}
           onChange={(e) => setText(e.target.value)}
         ></textarea>
+        <p className="text-sm text-gray-600 mb-6">
+          Note: Text is limited to 400 characters.
+        </p>
         
         <div className="flex justify-center">
           <button
@@ -61,7 +78,6 @@ const AppPage = () => {
           </div>
         )}
         
-
         <div {...getRootProps()} className="flex flex-col items-center justify-center p-6 border-2 border-gray-300 border-dashed rounded mt-6">
           <input {...getInputProps()} />
           <p className="mb-3 font-semibold text-gray-800">Drag and drop a file here, or click to select a file</p>
